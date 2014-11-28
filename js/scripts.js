@@ -4,13 +4,16 @@ jQuery(document).ready(function	() {
 
 	var Category = {
 		name: "some category",
-		purchases: [],
+		/*purchases: [],*/
 		totalAmount: function () {
 			var sum = 0;
 			for (var i = 0; i < this.purchases.length; i++) {
 				sum += (this.purchases[i].totalCost());
-				/*console.log(this.purchases[i]);*/ //о, строчка - ты спасла меня(((
 			} return sum;
+		},
+		initialize:  function(name){
+			this.name = name;
+			this.purchases = []; //можно дописать return this и тогда строки 23-24 написать в одну строку. тк до этого метод.инициализация не возвращала ничего. а только инициализировала
 		}
 	};
 
@@ -18,13 +21,51 @@ jQuery(document).ready(function	() {
 		e.preventDefault();
 
 		var newCategory = Object.create(Category);
-		newCategory.name = $("input#category").val();
+		newCategory.initialize($("input#category").val());
+
 
 		$("ul#categories").append("<li><span class='catName'>" + newCategory.name  + "</span></li>");
 		$('.havnt-categories').hide();
 		$("span#activeCategory").text(newCategory.name);
 
 		allCategories.push(newCategory);
+		$("table").hide();
+		$('.havnt-purchases').show();
+		$("#total-amount").empty();
+
+		$("ul#categories li").last().click(function() {
+
+			var activeCategory = $(this).text();
+			$("span#activeCategory").text(activeCategory);
+
+			for(var i = 0; i < allCategories.length; i++){
+				if(activeCategory == allCategories[i].name){
+
+					$("table").empty().append('<tr>' +
+					'<td class="description"></td>' +
+					'<td class="price"></td>' +
+					'<td class="quantity"></td>>' +
+					'<td class="total"></td>>' +
+					'</tr>');
+
+					allCategories[i].purchases.forEach(function(newPurchase)
+					{
+
+						$(".description").last().text(newPurchase.description);
+						$(".price").last().text(newPurchase.price);
+						$(".quantity").last().text(newPurchase.quantity);
+						$(".total").last().text(newPurchase.totalCost());
+
+					});
+					$("#total-amount").empty().append('Total amount of category is: ' + allCategories[i].totalAmount());
+				}
+			}
+
+
+
+		});
+
+
 
 	});
 
@@ -50,7 +91,7 @@ jQuery(document).ready(function	() {
 
 		for(var i = 0; i < allCategories.length; i++){
 			if(activeCategory == allCategories[i].name){
-				allCategories[i].purchases.push(newPurchase);
+				allCategories[i].purchases.push(newPurchase); //почему они передаются и в следующую NewCat?
 				$("#total-amount").empty().append('Total amount of category is: ' + allCategories[i].totalAmount() );
 
 			}
@@ -60,7 +101,7 @@ jQuery(document).ready(function	() {
 		$("table").show().append('<tr>' +
 		'<td class="description"></td>' +
 		'<td class="price"></td>' +
-		'<td class="quantity"></td>>' +
+		'<td class="quantity"></td>' +
 		'<td class="total"></td>>' +
 		'</tr>');
 
@@ -72,36 +113,14 @@ jQuery(document).ready(function	() {
 		$(".total").last().text(newPurchase.totalCost());
 
 
-	/*	$("input#description").val(""); //очистим инпуты, но почему нельзя исп.empty? ага теперь вообще приходит NaN! BUT WHY??!!
-		newPurchase.price = $("input#price").val("");
-		newPurchase.quantity = $("input#quantity").val("");*/
+		/*	$("input#description").val(""); //очистим инпуты, но почему нельзя исп.empty? ага теперь вообще приходит NaN! BUT WHY??!!
+		 newPurchase.price = $("input#price").val("");
+		 newPurchase.quantity = $("input#quantity").val("");*/
 
 
 	});
 
-/*	$("ul#categories li").last().click(function() {
 
-		var activeCategory = $("ul#categories li").text();
-		$("span#activeCategory").text(activeCategory);
-
-		for(var i = 0; i < allCategories.length; i++){
-			if(activeCategory == allCategories[i].name){
-
-
-				allCategories[i].purchases.push(newPurchase);
-				$("#total-amount").empty().append('Total amount of category is: ' + allCategories[i].totalAmount() );
-
-			}
-		}
-
-
-
-	}
-		$("span#activeCategory").text(newCategory.name);
-		$("ul#tasks").text("");
-		newCategory.purchases.forEach(function(task) {
-			$("ul#tasks").append("<li>" + task + "</li>");
-		});*/
 
 
 
